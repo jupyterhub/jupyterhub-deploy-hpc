@@ -1,2 +1,2 @@
 # jupyterhub-deploy-hpc
-Documented examples of Jupyterhub deployment in HPC settings
+Documented examples of JupyterHub deployment in HPC settings
