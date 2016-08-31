@@ -19,3 +19,10 @@ scheduler.
 See the docstrings and comments in the files for more details
 
 I have some undefined variables in the files that start with `CONF_` for sensible configuration details I removed.
+
+## Network setup
+
+A key configuration element for spawners launching remote Jupyter Notebooks is making the right ports available.
+
+* `batchspawner` automatically takes care of communicating to the Jupyter Notebooks running remotely the IP address of the Jupyterhub server, I setup the Jupyterhub instance so that it accepts incoming connections from all Comet computing nodes.
+* The Jupyter Notebooks also need to be able to communicate with Jupyterhub on port 8081, for this I setup a SSH tunnel, the easiest way is to create a `tunnelbot` user that has no shell access but can only setup tunnels. Then dump the private RSA key of this user into the SLURM job, this way once the job starts, we can create a local tunnel and make the 8081 port of Jupyterhub instance available locally to the Comet computing node.
