@@ -9,6 +9,21 @@ Jupyterhub deployment on a single machine that authenticates users with [XSEDE](
 and launches Jupyter Notebooks on computing nodes of the Comet Supercomputer going through the SLURM
 scheduler.
 
+## Requirements
+
+At SDSC we use a SDSC Cloud Ubuntu 14.04 Openstack virtual machine, but any distribution would be fine.
+I recommend to use Anaconda, but another Python 3 installation would work (Jupyterhub requires Python 3), required packages:
+
+* `jupyterhub`
+* `oauthenticator`
+* `batchspawner`
+
+On the system you also need to install `gsissh` for logging into a XSEDE Supercomputer, there are packages from Globus online for Debian and Ubuntu.
+
+It is convenient to install `supervisord` to handle automatically starting Jupyterhub at reboot and restart if anything goes wrong, but it is not necessary.
+
+It would also be better to use NGINX to handle SSL and proxy Jupyterhub, but I wanted to keep the setup simple.
+
 ## Files
 
 * `jupyterhub.sh`: bash script to launch the Jupyterhub service, to be run as `root`
