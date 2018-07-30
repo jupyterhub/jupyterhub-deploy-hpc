@@ -1,0 +1,58 @@
+Bootstrap: docker
+From: centos:7
+
+%labels
+  MAINTAINER sampedro@colorado.edu
+
+%environment
+  export JUPYTER_DATA_DIR=$HOME/.singularity-jupyter
+
+%setup
+  mkdir -p /usr/local/share/profile_example-shas
+
+%files
+  profile_example-shas/ /usr/local/share/profile_example-shas/
+
+%post
+  # Install dependencies for Slurm, SSSD, and PAM
+  useradd -u 515 -m slurm
+  useradd -u 992 -m munge
+  yum -y update
+  yum -y install epel-release
+  yum -y groupinstall 'Development Tools'
+  yum -y install sssd curl wget strace iproute munge munge-devel pam-devel openssl openssl-devel readline-devel perl-devel
+  cd ~ && wget https://download.schedmd.com/slurm/slurm-17.02.9.tar.bz2
+  rpmbuild -ta slurm-17.02.9.tar.bz2
+  cd ~/rpmbuild/RPMS/x86_64
+  rpm -ivh slurm-pam_slurm-17.02.9-1.el7.centos.x86_64.rpm slurm-plugins-17.02.9-1.el7.centos.x86_64.rpm slurm-munge-17.02.9-1.el7.centos.x86_64.rpm slurm-perlapi-17.02.9-1.el7.centos.x86_64.rpm slurm-17.02.9-1.el7.centos.x86_64.rpm slurm-devel-17.02.9-1.el7.centos.x86_64.rpm
+
+  # Install Omnipath and OpenMPI user libraries for Summit
+  yum install -y libhfi1 libpsm2 libpsm2-devel libpsm2-compat
+  yum install -y perftest qperf
+  yum install -y libibverbs libibverbs-devel rdma
+  yum install -y numactl-libs numactl-devel
+  yum install -y pciutils
+  yum install -y which
+  wget https://download.open-mpi.org/release/open-mpi/v2.0/openmpi-2.0.1.tar.gz
+  tar -xf openmpi-2.0.1.tar.gz
+  cd openmpi-2.0.1/
+  ./configure \
+  --with-verbs \
+  --with-psm2 \
+  --enable-mpi-thread-multiple
+  make -j2
+  make install
+
+  # Install Jupyter*
+  yum -y install python34-devel python34-pip
+  pip3 install --upgrade pip
+  pip3 install jupyterhub==0.7.2
+  pip3 install --upgrade notebook
+  pip3 install ipyparallel==6.2
+  pip3 install matplotlib numpy scipy pandas
+
+%runscript
+  # Copy example ipyparallel profile to home directory
+  mkdir -p $HOME/.ipython
+  cp -rf /usr/local/share/profile_example-shas $HOME/.ipython/profile_example-shas
+  exec "$@"
