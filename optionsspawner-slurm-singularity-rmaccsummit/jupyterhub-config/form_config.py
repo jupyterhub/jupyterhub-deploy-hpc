@@ -47,7 +47,7 @@ runtime_input = TextInputField('req_runtime',
     label='Specify runtime (HH:MM:SS format, 12hr max)',
     attr_required=True,
     attr_value='02:00:00',
-    attr_pattern="[01]{1}[0-2]{1}:[0-5]{1}[0-9]{1}:[0-5]{1}[0-9]{1}"
+    attr_pattern="(12:00:00)|(1[0-1]|0?[0-9]):([0-5][0-9]):([0-5][0-9])"
 )
 
 nodes_input = NumericalInputField('req_nodes',
